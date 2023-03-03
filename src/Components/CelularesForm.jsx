@@ -3,24 +3,28 @@ import axios from "axios";
 
 function CelularesForm({del, id}){
 
-  const[marca, setMarca] = useState("")
-  const[modelo, setModelo] = useState("")
-  const[color, setColor] = useState("")
-  const[precio, setPrecio] = useState("")
-  const[descripcion, setDescripcion] = useState("")
-  const[operadora, setOperadora] = useState("")
+  const paramIniciales =  {marca:"", modelo: "", color:"", precio:"", descripcion: "", operadora: ""}
+
+  const[celular, setCelular] = useState(paramIniciales)
+  // const[marca, setMarca] = useState("")
+  // const[modelo, setModelo] = useState("")
+  // const[color, setColor] = useState("")
+  // const[precio, setPrecio] = useState("")
+  // const[descripcion, setDescripcion] = useState("")
+  // const[operadora, setOperadora] = useState("")
 
   useEffect(() =>{
     //console.log(id)
     if(id !== undefined)
       cargarCelular()
     else{
-      setMarca("")
-      setModelo("")
-      setColor("")
-      setPrecio("")
-      setDescripcion("")
-      setOperadora("")
+      setCelular(paramIniciales)
+      // setMarca("")
+      // setModelo("")
+      // setColor("")
+      // setPrecio("")
+      // setDescripcion("")
+      // setOperadora("")
     }
   },[id])
 
@@ -29,13 +33,14 @@ function CelularesForm({del, id}){
       const res = await axios("https://denny2023.azurewebsites.net/api/celulares/" + id)
       const data = await res.data
 
-      console.log(data)
-      setMarca(data.marca)
-      setModelo(data.modelo)
-      setColor(data.color)
-      setPrecio(data.precio)
-      setDescripcion(data.descripcion)
-      setOperadora(data.operadora)
+      setCelular(data)
+      // console.log(data)
+      // setMarca(data.marca)
+      // setModelo(data.modelo)
+      // setColor(data.color)
+      // setPrecio(data.precio)
+      // setDescripcion(data.descripcion)
+      // setOperadora(data.operadora)
     }
     catch(error){
       if(error.response.status === 404){
@@ -67,11 +72,7 @@ function CelularesForm({del, id}){
 
   async function eliminar(){
     try{
-      const res = await axios({
-        method: "DELETE",
-        url: "https://denny2023.azurewebsites.net/api/celulares?id=" + id
-      })
-
+      const res = await axios.delete("https://denny2023.azurewebsites.net/api/celulares?id=" + id)
       const data = await res.data
 
       alert(data.message)
@@ -90,22 +91,11 @@ function CelularesForm({del, id}){
 
   async function editar(){
     try{
-      const celular = {
-        celularId: id,
-        marca: marca,
-        modelo: modelo,
-        color: color,
-        precio: precio,
-        descripcion: descripcion,
-        operadora: operadora,
-      }
-
-      const res = await axios({
-        method: "PUT",
-        url: "https://denny2023.azurewebsites.net/api/celulares",
-        data: celular
-      })
-
+      
+      const res = await axios.put(
+        "https://denny2023.azurewebsites.net/api/celulares", 
+        {...celular, celularId: id,})
+    
       const data = await res.data
 
       alert(data.message)
@@ -119,21 +109,8 @@ function CelularesForm({del, id}){
 
   async function guardar(){
     try{
-      const celular = {
-        marca: marca,
-        modelo: modelo,
-        color: color,
-        precio: precio,
-        descripcion: descripcion,
-        operadora: operadora,
-      }
-            
-      const res = await axios({
-        method: "POST",
-        url: "https://denny2023.azurewebsites.net/api/celulares",
-        data: celular
-      })
-
+       
+      const res = await axios.post("https://denny2023.azurewebsites.net/api/celulares", celular)
       const data = await res.data
 
       alert(data.message)
@@ -168,42 +145,52 @@ function CelularesForm({del, id}){
       <form id="formulario" className="needs-validation" noValidate>
         <div className="form-group mt-2">
           <label className="form-label">Marca:</label>
-          <input className="form-control" required type="text" value={marca} onChange={(e) => setMarca(e.target.value)} disabled={del === true ? true : false} />
+          <input className="form-control" required type="text" value={celular.marca} 
+            onChange={(e) => setCelular({...celular, marca: e.target.value})} 
+            disabled={del === true ? true : false} />
           <div className="valid-feedback">Correcto</div>
           <div className="invalid-feedback">Ingrese una marca</div>
         </div>
         <div className="form-group mt-2">
           <label className="form-label">Modelo:</label>
-          <input className="form-control" required type="text" value={modelo} onChange={(e) => setModelo(e.target.value)} disabled={del === true ? true : false} />
+          <input className="form-control" required type="text" value={celular.modelo} 
+            onChange={(e) => setCelular({...celular, modelo: e.target.value})} disabled={del === true ? true : false} />
           <div className="valid-feedback">Correcto</div>
           <div className="invalid-feedback">Ingrese un modelo</div>
         </div>
         <div className="form-group mt-2">
           <label className="form-label">Color</label>
-          <input className="form-control" required type="text" value={color} onChange={(e) => setColor(e.target.value)} disabled={del === true ? true : false} />
+          <input className="form-control" required type="text" value={celular.color} 
+            onChange={(e) => setCelular({...celular, color: e.target.value})} disabled={del === true ? true : false} />
           <div className="valid-feedback">Correcto</div>
           <div className="invalid-feedback">Ingrese un color</div>
         </div>
         <div className="form-group mt-2">
           <label className="form-label">precio</label>
-          <input className="form-control" required type="text" value={precio} onChange={(e) => setPrecio(e.target.value)} disabled={del === true ? true : false} />
+          <input className="form-control" required type="text" value={celular.precio} 
+            onChange={(e) => setCelular({...celular, precio: e.target.value})} disabled={del === true ? true : false} />
           <div className="valid-feedback">Correcto</div>
           <div className="invalid-feedback">Ingrese un precio</div>
         </div>
         <div className="form-group mt-2">
           <label className="form-label">descripcion</label>
-          <input className="form-control" required type="text" value={descripcion} onChange={(e) => setDescripcion(e.target.value)} disabled={del === true ? true : false} />
+          <input className="form-control" required type="text" value={celular.descripcion} 
+            onChange={(e) => setCelular({...celular, descripcion: e.target.value})} 
+            disabled={del === true ? true : false} />
           <div className="valid-feedback">Correcto</div>
           <div className="invalid-feedback">Ingrese una descripcion</div>
         </div>
         <div className="form-group mt-2">
           <label className="form-label">operadora</label>
-          <input className="form-control" required type="text" value={operadora} onChange={(e) => setOperadora(e.target.value)} disabled={del === true ? true : false} />
+          <input className="form-control" required type="text" value={celular.operadora} 
+            onChange={(e) => setCelular({...celular, operadora: e.target.value})}
+            disabled={del === true ? true : false} />
           <div className="valid-feedback">Correcto</div>
           <div className="invalid-feedback">Ingrese una operadora</div>
         </div>
         <div className="form-group mt-2">
-          <button className={`btn btn-${id === undefined ? "success" : del !== true ? "primary" : "danger"}`} onClick={(e) => enviar(e)}>{id === undefined ? "Guardar" : del !== true ? "Editar" : "Eliminar"}</button>
+          <button className={`btn btn-${id === undefined ? "success" : del !== true ? "primary" : "danger"}`} 
+            onClick={(e) => enviar(e)}>{id === undefined ? "Guardar" : del !== true ? "Editar" : "Eliminar"}</button>
           <button className="btn btn-secondary" data-bs-dismiss="modal" onClick={(e) => cancelar(e)}>Cancelar</button>
         </div>
       </form>
